@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Hello, world from local"
+echo "Hello, world from github"
