@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "Hi from feature"
-new feature line
+echo "new feature line"
