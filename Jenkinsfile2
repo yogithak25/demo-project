@@ -9,5 +9,21 @@ pipeline {
                 sh './build.sh'
             }
         }
+        stage('Test') { 
+            steps {
+                sh 'echo test'
+            }
+        }
+        stage('Approval') {
+            steps {
+                input message: 'Approve deployment to Production?',
+                    ok: Deploy
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'echo Deploy'
+            }
+        }
     }
 }
