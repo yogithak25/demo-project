@@ -8,13 +8,13 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'echo Running tests'
+                sh 'echoRunning tests'
             }
         }
     }
     post {
         success {
-            echo "PR Validation Passed"
+            echo "PR validation passed"
         }
         failure {
             echo "PR Validation Failed"
