@@ -10,11 +10,14 @@ pipeline {
     }
     post {
         failure {
-            slackSend(
-                channel: '#jenkins-alerts',
-                color: 'danger',
-                message: "Jenkins Job Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBuild URL: ${env.BUILD_URL}"
-            )
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+                sh """
+                curl -X POST -H 'Content-type: application/json' \
+                --data '{
+                  "text": "❌ Jenkins BUILD FAILED\\nJob: ${JOB_NAME}\\nBuild: #${BUILD_NUMBER}\\nURL: ${BUILD_URL}"
+                }' $SLACK_WEBHOOK
+                """
+            }
         }
     }
 }
