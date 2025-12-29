@@ -1,10 +1,10 @@
 pipeline {
     agent any
     environment {
-        TAG_NAME = "v1.0.${env.BUID_NUMBER}"
+        TAG_NAME = "v1.0.${BUILD_NUMBER}"
     }
     stages {
-        stage('Buld') {
+        stage('Build') {
             steps {
                 echo "Build Successfull"
             }
