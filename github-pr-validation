@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            stepd {
+                echo "Building PR: ${env.CHNAGE_ID}"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'echo Running tests'
+            }
+        }
+    }
+    post {
+        success {
+            echo "PR Validation Passed"
+        }
+        failure {
+            echo "PR Validation Failed"
+        }
+    }
+}
