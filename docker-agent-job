@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        docker {
+            image 'ubuntu:22.04'
+            args '-u root'
+        }
+    }
+    stages {
+        stage('Verify Container') {
+            steps {
+                sh 'cat /etc/os-release'
+            }
+        }
+        stage('Install tools') {
+            steps {
+                sh '''
+                    apt update
+                    apt install -y curl
+                    curl --version
+                '''
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'echo "Build running inside Docker container"'
+            }
+        }
+    }
+}
