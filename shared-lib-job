@@ -1,0 +1,11 @@
+@Library('demo-lib') _ 
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                commonBuild()
+            }
+        }
+    }
+}
