@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        TAG_NAME = "v1.0.${BUID_NUMBER}"
+        TAG_NAME = "v1.0.${env.BUID_NUMBER}"
     }
     stages {
         stage('Buld') {
