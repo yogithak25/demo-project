@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building application"
+                sh 'exit 1'
+            }
+        }
+    }
+    post {
+        failure {
+            slackSend(
+                channel: '#jenkins-alerts',
+                color: 'danger',
+                message: "Jenkins Job Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBuild URL: ${env.BUILD_URL}"
+            )
+        }
+    }
+}
