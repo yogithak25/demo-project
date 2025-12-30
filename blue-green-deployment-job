@@ -1,0 +1,121 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+    environment {
+        BLUE_PORT = "8081"
+        GREEN_PORT = "8082"
+        BLUE_DIR  = "/opt/app-blue"
+        GREEN_DIR = "/opt/app-green"
+        JAR_NAME  = "demo-app.jar"
+    }
+    stages {
+
+        /* ---------------- CHECKOUT ---------------- */
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        /* ---------------- BUILD ---------------- */
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        /* ---------------- TEST ---------------- */
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        /* ---------------- DETERMINE ACTIVE ENV ---------------- */
+        stage('Identify Active Environment') {
+            steps {
+                script {
+                    def active = sh(
+                        script: "grep -R \"server 127.0.0.1:8081\" /etc/nginx/conf.d/app.conf || true",
+                        returnStdout: true
+                    ).trim()
+
+                    if (active) {
+                        env.ACTIVE_ENV = "BLUE"
+                        env.TARGET_ENV = "GREEN"
+                    } else {
+                        env.ACTIVE_ENV = "GREEN"
+                        env.TARGET_ENV = "BLUE"
+                    }
+
+                    echo "Active Environment: ${env.ACTIVE_ENV}"
+                    echo "Deploying to: ${env.TARGET_ENV}"
+                }
+            }
+        }
+
+        /* ---------------- DEPLOY TO IDLE ENV ---------------- */
+        stage('Deploy to Idle Environment') {
+            steps {
+                script {
+                    if (env.TARGET_ENV == "GREEN") {
+                        sh """
+                        cp target/${JAR_NAME} ${GREEN_DIR}/
+                        systemctl stop app-green || true
+                        systemctl start app-green
+                        """
+                    } else {
+                        sh """
+                        cp target/${JAR_NAME} ${BLUE_DIR}/
+                        systemctl stop app-blue || true
+                        systemctl start app-blue
+                        """
+                    }
+                }
+            }
+        }
+
+        /* ---------------- HEALTH CHECK ---------------- */
+        stage('Validate New Version') {
+            steps {
+                script {
+                    def port = (env.TARGET_ENV == "GREEN") ? GREEN_PORT : BLUE_PORT
+                    sh """
+                    sleep 10
+                    curl -f http://localhost:${port}/health
+                    """
+                }
+            }
+        }
+
+        /* ---------------- TRAFFIC SWITCH ---------------- */
+        stage('Switch Traffic') {
+            steps {
+                script {
+                    if (env.TARGET_ENV == "GREEN") {
+                        sh """
+                        sed -i 's/8081/8082/' /etc/nginx/conf.d/app.conf
+                        nginx -s reload
+                        """
+                    } else {
+                        sh """
+                        sed -i 's/8082/8081/' /etc/nginx/conf.d/app.conf
+                        nginx -s reload
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Blue-Green Deployment Successful"
+        }
+        failure {
+            echo "Deployment Failed – Traffic NOT switched"
+        }
+    }
+}
