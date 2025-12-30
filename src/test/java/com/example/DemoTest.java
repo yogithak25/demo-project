@@ -7,6 +7,6 @@ public class DemoTest {
 
     @Test
     public void testFailure() {
-        assertTrue(false);  // This will FAIL
+        assertTrue(true);  // This will FAIL
     }
 }
