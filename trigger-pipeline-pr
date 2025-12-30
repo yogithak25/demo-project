@@ -1,26 +1,27 @@
 pipeline {
     agent any
+
     tools {
         maven 'maven-3'
     }
 
     stages {
 
-        stage('Detect PR') {
+        stage('Verify PR') {
+            when {
+                changeRequest()
+            }
             steps {
-                script {
-                    if (env.CHANGE_ID) {
-                        echo "PR detected: ${env.CHANGE_ID}"
-                    } else {
-                        error "Not a PR build"
-                    }
-                }
+                echo "PR Build"
+                echo "PR ID: ${env.CHANGE_ID}"
+                echo "Source Branch: ${env.CHANGE_BRANCH}"
+                echo "Target Branch: ${env.CHANGE_TARGET}"
             }
         }
 
         stage('Build') {
             when {
-                expression { env.CHANGE_ID != null }
+                changeRequest()
             }
             steps {
                 sh 'mvn clean package -DskipTests'
@@ -29,7 +30,7 @@ pipeline {
 
         stage('Test') {
             when {
-                expression { env.CHANGE_ID != null }
+                changeRequest()
             }
             steps {
                 sh 'mvn test'
@@ -39,10 +40,10 @@ pipeline {
 
     post {
         failure {
-            echo "PR validation failed"
+            echo 'PR validation failed'
         }
         success {
-            echo "PR validation passed"
+            echo 'PR validation successful'
         }
     }
 }
