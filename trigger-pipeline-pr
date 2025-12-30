@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+    stages {
+        stage('Verify PR') {
+            when {
+                changeRequest()
+            }
+            steps {
+                echo "PR Build"
+                echo "PR ID: ${env.CHANGE_ID}"
+                echo "Source Branch: ${env.CHANGE_BRANCH}"
+                echo "Target Branch: ${env.CHANGE_TARGET}"
+            }
+        }
+
+        stage('Build') {
+            when {
+                changeRequest()
+            }
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            when {
+                changeRequest()
+            }
+            steps {
+                sh 'mvn test'
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo 'PR validation failed'
+        }
+        success {
+            echo 'PR validation successful'
+        }
+    }
+}
