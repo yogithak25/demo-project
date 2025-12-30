@@ -14,7 +14,7 @@ pipeline {
     }
     post {
         success {
-            echo "PR Validation Passed"
+            echo "PR validation passed"
         }
         failure {
             echo "PR Validation Failed"
