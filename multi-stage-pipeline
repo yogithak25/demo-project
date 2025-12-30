@@ -9,11 +9,21 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
+        stage('Parallel Verification') {
+            parallel {
+                stage('Test') {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
+                stage('Static Analysis') {
+                    steps {
+                        sh 'mvn validate'
+                    }
+                }
             }
         }
+        
         stage('Store artifacts to Nexus') {
             steps {
                 sh 'mvn deploy'
