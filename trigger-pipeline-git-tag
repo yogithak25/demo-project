@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+    stages {
+        stage('Verify tag') {
+            steps {
+                echo "Triggered by tag: ${env.GIT_TAG_NAME ?: env.TAG_NAME}"
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy to nexus') {
+            steps {
+                sh 'mvn deploy'
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Tag build failed"
+        }
+        success {
+            echo "Tag build succeeded"
+        }
+    }
+}
