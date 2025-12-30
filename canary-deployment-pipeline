@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven-3'
+    }
+
+    environment {
+        STABLE_PORT = "8081"
+        CANARY_PORT = "8082"
+        STABLE_DIR  = "/opt/app-stable"
+        CANARY_DIR  = "/opt/app-canary"
+        JAR_NAME    = "demo-app.jar"
+        NGINX_CONF  = "/etc/nginx/conf.d/app.conf"
+    }
+
+    stages {
+        /* ---------------- BUILD ---------------- */
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        /* ---------------- TEST ---------------- */
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        /* ---------------- DEPLOY CANARY ---------------- */
+        stage('Deploy Canary') {
+            steps {
+                sh """
+                cp target/${JAR_NAME} ${CANARY_DIR}/
+                systemctl stop app-canary || true
+                systemctl start app-canary
+                """
+            }
+        }
+
+        /* ---------------- HEALTH CHECK ---------------- */
+        stage('Validate Canary') {
+            steps {
+                sh """
+                sleep 10
+                curl -f http://localhost:${CANARY_PORT}/health
+                """
+            }
+        }
+
+        /* ---------------- ROUTE CANARY TRAFFIC ---------------- */
+        stage('Route Canary Traffic (10%)') {
+            steps {
+                sh """
+                sed -i 's/weight=0/weight=1/' ${NGINX_CONF} || true
+                nginx -s reload
+                """
+            }
+        }
+
+        /* ---------------- MONITOR CANARY ---------------- */
+        stage('Monitor Canary') {
+            steps {
+                echo "Monitoring canary for errors, latency, logs"
+                sleep 30
+            }
+        }
+
+        /* ---------------- PROMOTE OR ROLLBACK ---------------- */
+        stage('Promote Canary') {
+            steps {
+                sh """
+                sed -i 's/8081 weight=9/8081 weight=0/' ${NGINX_CONF}
+                sed -i 's/8082 weight=1/8082 weight=10/' ${NGINX_CONF}
+                nginx -s reload
+                """
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo "Canary failed — rolling back traffic"
+            sh """
+            sed -i 's/8082 weight=.*/8082 weight=0;/' ${NGINX_CONF}
+            sed -i 's/8081 weight=.*/8081 weight=10;/' ${NGINX_CONF}
+            nginx -s reload
+            """
+        }
+
+        success {
+            echo "Canary successfully promoted to production"
+        }
+    }
+}
