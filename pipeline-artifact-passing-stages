@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+                stash name: 'app-jar', includes: 'target/*.jar'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                unstash 'app-jar'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                unstash 'app-jar'
+                sh 'echo Deploying application'
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar'
+            }
+        }
+    }
+}
