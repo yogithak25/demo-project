@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+
+    environment {
+        APP_DIR = "/opt/app/current"
+        BACKUP_DIR = "/opt/app/backup"
+        JAR_NAME = "demo-app.jar"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh """
+                mkdir -p ${BACKUP_DIR}
+                cp ${APP_DIR}/${JAR_NAME} ${BACKUP_DIR}/${JAR_NAME} || true
+                cp target/${JAR_NAME} ${APP_DIR}/${JAR_NAME}
+                systemctl restart demo-app
+                """
+            }
+        }
+        stage('Validate') {
+            steps {
+                sh """
+                sleep 10
+                curl -f http://localhost:8080/health
+                """
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Deployment failed – rolling back"
+
+            sh """
+            cp ${BACKUP_DIR}/${JAR_NAME} ${APP_DIR}/${JAR_NAME}
+            systemctl restart demo-app
+            """
+        }
+        success {
+            echo "Deployment successful – rollback not required"
+        }
+    }
+}
