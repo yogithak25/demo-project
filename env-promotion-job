@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'VERSION', description: 'Artifact version to promote')
+    }
+
+    stages {
+
+        stage('Promote to DEV') {
+            steps {
+                echo "Deploying ${params.VERSION} to DEV"
+                sh './deploy.sh dev ${params.VERSION}'
+            }
+        }
+
+        stage('Promote to QA') {
+            steps {
+                echo "Deploying ${params.VERSION} to QA"
+                sh './deploy.sh qa ${params.VERSION}'
+            }
+        }
+
+        stage('Approval for PROD') {
+            steps {
+                input message: "Approve promotion to PROD for ${params.VERSION}?"
+            }
+        }
+
+        stage('Promote to PROD') {
+            steps {
+                echo "Deploying ${params.VERSION} to PROD"
+                sh './deploy.sh prod ${params.VERSION}'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Promotion completed successfully"
+        }
+        failure {
+            echo "Promotion failed"
+        }
+    }
+}
