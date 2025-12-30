@@ -5,21 +5,33 @@ pipeline {
     }
     stages {
         stage('Verify tag') {
+            when {
+                buildingTag()
+            }
             steps {
                 echo "Triggered by tag: ${env.GIT_TAG_NAME ?: env.TAG_NAME}"
             }
         }
         stage('Build') {
+            when {
+                buildingTag()
+            }
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
         stage('Test') {
+            when {
+                buildingTag()
+            }
             steps {
                 sh 'mvn test'
             }
         }
         stage('Deploy to nexus') {
+            when {
+                buildingTag()
+            }
             steps {
                 sh 'mvn deploy'
             }
