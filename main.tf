@@ -1,0 +1,8 @@
+provider "aws" {
+  region = "us-west-2"
+}
+
+resource "aws_instance" "app" {
+  ami           = "ami-00f46ccd1cbfb363e"
+  instance_type = "t2.micro"
+}
