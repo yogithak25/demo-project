@@ -26,8 +26,7 @@ pipeline {
                 sh """
                 curl -X POST -H 'Content-type: application/json' \
                 --data '{
-                "text": "❌ Jenkins BUILD FAILED\\nJob: ${JOB_NAME}\\nBuild:
-                #${BUILD_NUMBER}\\nURL: ${BUILD_URL}"
+                "text": "❌ Jenkins BUILD FAILED\\nJob: ${JOB_NAME}\\nBuild: #${BUILD_NUMBER}\\nURL: ${BUILD_URL}"
                 }' $SLACK_WEBHOOK
                 """
             }
