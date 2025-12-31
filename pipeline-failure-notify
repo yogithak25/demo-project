@@ -6,7 +6,7 @@ pipeline {
         stages {
             stage('Build') {
                 steps {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn -Dmaven.repo.local=.m2 clean package -DskipTests'
                 }
             }
             stage('Test') {
