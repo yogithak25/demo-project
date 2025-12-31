@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    tools {
+      maven 'maven-3'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Approval for PROD') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    input message: 'Approve deployment to PROD?'
+                          submitter: 'admin,release-manager'
+                }
+            }
+        }
+        stage('Deploy to PROD') {
+            steps {
+                sh './deploy-prod.sh'
+            }
+        }
+    }
+    post {
+        aborted {
+            echo 'Deployment aborted by user'
+        }
+        success {
+            echo 'Deployment completed successfully'
+        }
+    }
+}
