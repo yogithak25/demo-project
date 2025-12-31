@@ -16,7 +16,11 @@ pipeline {
             }
             stage('Deploy to Nexus') {
                 steps {
-                    sh 'mvn deploy'
+                        retry(3) {
+                            timeout(time: 5, unit: 'MINUTES') {
+                                sh 'mvn deploy'
+                            }
+                        }
                 }
             }
         }
