@@ -7,7 +7,7 @@
 
   <groupId>com.example</groupId>
   <artifactId>demo-app</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>jar</packaging>
 
   <!-- ✅ ADD THIS SECTION -->
@@ -23,7 +23,7 @@
   <distributionManagement>
     <repository>
       <id>nexus</id>
-      <url>http://54.202.130.118:8081/repository/maven-releases/</url>
+      <url>http://54.69.65.173:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 
