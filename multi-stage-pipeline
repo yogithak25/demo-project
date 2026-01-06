@@ -33,7 +33,14 @@ pipeline {
                 }
             }
         }
-        
+        stage('Compliance: Manual approval') {
+            steps {
+                input(
+                    message: 'Approve publish artifacts to Nexus?',
+                    submitter: 'admin'
+                )
+            }
+        }
         stage('Store artifacts to Nexus') {
             steps {
                 sh 'mvn deploy'
