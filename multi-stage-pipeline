@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'maven-3'
+        
     }
     stages {
         stage('Build') {
@@ -23,7 +24,7 @@ pipeline {
                 }
                 stage('Code quality analysis') {
                     steps {
-                        sh 'mvn sonar:sonar'
+                        sh 'mvn sonar:sonar -Dsonar.login=sonar'
                     }
                 }
             }
