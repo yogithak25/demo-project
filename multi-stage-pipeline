@@ -21,6 +21,11 @@ pipeline {
                         sh 'mvn validate'
                     }
                 }
+                stage('Code quality analysis') {
+                    steps {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
             }
         }
         
