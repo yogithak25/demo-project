@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools {
+      maven 'maven-3'
+    }
+    environment {
+        APP_VERSION = "1.0.8-${BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+                stash name: 'artifact', includes: 'target/*.jar'
+            }
+        }
+        stage('Verify Artifact') {
+            steps {
+                sh 'sha256sum target/*.jar > artifact.sha'
+            }
+        }
+        stage('Publish') {
+            steps {
+                sh 'mvn deploy'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                unstash 'artifact'
+                sh 'sha256sum -c artifact.sha'
+                sh "./deploy.sh ${APP_VERSION}"
+            }
+        }
+    }
+}
