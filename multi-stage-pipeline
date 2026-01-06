@@ -22,9 +22,11 @@ pipeline {
                         sh 'mvn validate'
                     }
                 }
-                stage('Code quality analysis') {
+                stage('Code Quality Analysis') {
                     steps {
-                        sh 'mvn sonar:sonar -Dsonar.login=sonar'
+                        withSonarQubeEnv('sonarqube-server') {
+                            sh 'mvn clean verify sonar:sonar -Dsonar.login=sonar'
+                        }
                     }
                 }
             }
