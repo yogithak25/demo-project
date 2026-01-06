@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven-3'
+    }
+
+    environment {
+        BASE_VERSION = "1.0.8"
+        APP_VERSION  = "${BASE_VERSION}-${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Set Version') {
+            steps {
+                sh "mvn versions:set -DnewVersion=${APP_VERSION}"
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                sh 'mvn clean verify'
+            }
+        }
+
+        stage('Tag Source') {
+            steps {
+                sh """
+                git tag v${APP_VERSION}
+                git push origin v${APP_VERSION}
+                """
+            }
+        }
+
+        stage('Publish Artifact') {
+            steps {
+                sh 'mvn deploy'
+            }
+        }
+    }
+}
