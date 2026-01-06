@@ -28,8 +28,6 @@
   </distributionManagement>
 <properties>
   <sonar.host.url>http://35.95.124.14:9000</sonar.host.url>
-  <sonar.login>admin</sonar.login>
-  <sonar.password>admin</sonar.password>
 </properties>
 
 
