@@ -26,9 +26,15 @@
       <url>http://35.95.124.14:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
-<properties>
-  <sonar.host.url>http://35.95.124.14:9000</sonar.host.url>
-</properties>
+  <properties>
+        <!-- SonarQube server URL -->
+        <sonar.host.url>http://35.95.124.14:9000</sonar.host.url>
+
+        <!-- Optional but recommended -->
+        <sonar.projectKey>demo-project</sonar.projectKey>
+        <sonar.projectName>demo-project</sonar.projectName>
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+  </properties>
 
 
 </project>
