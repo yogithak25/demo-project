@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    tools {
+       maven 'maven-3'
+    }
+    environment {
+        APP_VERSION = "1.0.0-${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Deploy to Green') {
+            steps {
+                sh "./deploy.sh green ${APP_VERSION}"
+            }
+        }
+        stage('Health Check') {
+            steps {
+                sh './health-check.sh green'
+            }
+        }
+        stage('Switch Traffic') {
+            steps {
+                sh './switch-lb.sh green'
+            }
+        }
+        stage('Smoke Test') {
+            steps {
+                sh './smoke-test.sh'
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Rolling back traffic to blue"
+            sh './switch-lb.sh blue'
+        }
+        success {
+            echo "Zero-downtime deployment completed"
+        }
+    }
+}
