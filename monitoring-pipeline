@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    environment {
+        APP_VERSION = "1.0.0-${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Deploy') {
+            steps {
+                sh "./deploy.sh ${APP_VERSION}"
+            }
+        }
+        stage('Health Check') {
+            steps {
+                sh 'curl -f http://app.example.com/health'
+            }
+        }
+        stage('Monitoring Validation') {
+            steps {
+	              sleep 120
+                sh './check-metrics.sh'
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Monitoring detected issues — rolling back"
+            sh './rollback.sh'
+        }
+        success {
+            echo "Deployment stable and healthy"
+        }
+    }
+}
