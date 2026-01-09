@@ -44,14 +44,14 @@
   <distributionManagement>
     <repository>
       <id>nexus</id>
-      <url>http://35.89.137.70:8081/repository/maven-releases/</url>
+      <url>http://52.13.49.131:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
   <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- SonarQube server URL -->
-        <sonar.host.url>http://35.89.137.70:9000</sonar.host.url>
+        <sonar.host.url>http://52.13.49.131:9000</sonar.host.url>
 
         <!-- Optional but recommended -->
         <sonar.projectKey>demo-project</sonar.projectKey>
