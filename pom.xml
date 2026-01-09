@@ -7,7 +7,7 @@
 
   <groupId>com.example</groupId>
   <artifactId>demo-app</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.9-1</version>
   <packaging>jar</packaging>
 
   <!-- ✅ ADD THIS SECTION -->
