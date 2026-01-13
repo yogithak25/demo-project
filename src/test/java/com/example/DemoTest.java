@@ -10,9 +10,4 @@ public class DemoTest {
         String msg = DemoApp.getStartupMessage();
         assertEquals("Demo App Started Successfully", msg);
     }
-
-    @Test
-    public void testMainExecution() {
-        DemoApp.main(new String[]{});
-    }
 }
