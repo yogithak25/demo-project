@@ -7,7 +7,7 @@
 
   <groupId>com.example</groupId>
   <artifactId>demo-app</artifactId>
-  <version>1.0.9-2</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <!-- ✅ ADD THIS SECTION -->
@@ -44,14 +44,14 @@
   <distributionManagement>
     <repository>
       <id>nexus</id>
-      <url>http://34.220.117.248:8081/repository/maven-releases/</url>
+      <url>http://54.218.84.247:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
   <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- SonarQube server URL -->
-        <sonar.host.url>http://34.220.117.248:9000</sonar.host.url>
+        <sonar.host.url>http://54.218.84.247:9000</sonar.host.url>
 
         <!-- Optional but recommended -->
         <sonar.projectKey>demo-project</sonar.projectKey>
