@@ -7,7 +7,9 @@ public class DemoTest {
 
     @Test
     public void testStartupMessage() {
-        String msg = DemoApp.getStartupMessage();
-        assertEquals("Demo App Started Successfully", msg);
+        assertEquals(
+            "Demo App Started Successfully",
+            DemoApp.STARTUP_MESSAGE
+        );
     }
 }
