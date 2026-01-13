@@ -2,10 +2,11 @@ package com.example;
 
 public class DemoApp {
 
+    public static String getStartupMessage() {
+        return "Demo App Started Successfully";
+    }
+
     public static void main(String[] args) {
-        System.out.println("=================================");
-        System.out.println(" Demo App Started Successfully ");
-        System.out.println(" Java Version: " + System.getProperty("java.version"));
-        System.out.println("=================================");
+        System.out.println(getStartupMessage());
     }
 }
