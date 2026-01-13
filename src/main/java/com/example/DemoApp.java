@@ -11,7 +11,12 @@ public class DemoApp {
     public static final String STARTUP_MESSAGE =
             "Demo App Started Successfully";
 
+    // ✅ ADD THIS METHOD
+    public static String getStartupMessage() {
+        return STARTUP_MESSAGE;
+    }
+
     public static void main(String[] args) {
-        LOGGER.info(STARTUP_MESSAGE);
+        LOGGER.info(getStartupMessage());
     }
 }
