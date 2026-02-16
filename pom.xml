@@ -76,7 +76,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- SonarQube server URL -->
-        <sonar.host.url>http://44.244.119.216:9000</sonar.host.url>
+        <sonar.host.url>http://44.255.173.253:9000</sonar.host.url>
          <sonar.coverage.jacoco.xmlReportPaths>
              target/site/jacoco/jacoco.xml
          </sonar.coverage.jacoco.xmlReportPaths>
