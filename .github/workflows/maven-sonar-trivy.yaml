@@ -1,0 +1,36 @@
+name: Maven Build and Sonar Analysis
+on: workflow_dispatch
+jobs:
+  maven-build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Maven Build
+        run: mvn clean package -DskipTests
+
+  sonarqube-analysis:
+    runs-on: self-hosted
+    needs: maven-build   # Sonar runs only if build succeeds
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Analysis
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  security-check:
+    runs-on: self-hosted
+    needs: sonarqube-analysis
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Trivy FS Scan
+        run: |
+          trivy fs --format table -o fs-report.json .
