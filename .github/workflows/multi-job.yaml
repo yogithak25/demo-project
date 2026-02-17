@@ -1,0 +1,19 @@
+name: multiple jobs
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run tests"
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Build docker image"
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploy application"
