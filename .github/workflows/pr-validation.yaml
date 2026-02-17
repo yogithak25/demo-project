@@ -1,0 +1,17 @@
+name: PR Validation
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  validate:
+    runs-on: self-hosted
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Sonarqube analysis
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
