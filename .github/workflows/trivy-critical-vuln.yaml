@@ -1,0 +1,22 @@
+name: Security Scan - Trivy
+on: workflow_dispatch
+jobs:
+  security-scan:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Trivy FS Scan (Fail on HIGH/CRITICAL)
+        run: |
+          trivy fs --severity HIGH,CRITICAL --exit-code 1 .
+
+      - name: Generate JSON Report
+        run: |
+          trivy fs --format json -o trivy-report.json .
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.json
