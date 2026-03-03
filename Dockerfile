@@ -1,14 +1,14 @@
-# Build Stage
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
+# Use lightweight Java runtime
+FROM eclipse-temurin:17-jre-alpine
 
-# Runtime Stage
-FROM eclipse-temurin:17-jre
+# Set working directory
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
 
+# Copy jar file into container
+COPY target/demo-app-1.0.0.jar app.jar
+
+# Expose application port
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Run the application
+ENTRYPOINT ["java","-jar","app.jar"]
